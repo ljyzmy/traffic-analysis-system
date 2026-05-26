@@ -11,7 +11,9 @@ logs/
 
 # 本地私密配置（勿提交）
 .env
-.env.*
+.env.local
+.env.*.local
+!.env.example
 application-local.properties
 config_local.py
 
