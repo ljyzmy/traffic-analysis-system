@@ -1,0 +1,12 @@
+# 复制为 application-local.properties 并填写真实值（该文件已被 .gitignore 忽略）
+# Spring Boot 启动时添加参数：--spring.config.additional-location=application-local.properties
+
+spring.data.mongodb.username=adminUser
+spring.data.mongodb.password=你的MongoDB密码
+
+jwt.secret=请生成至少32位的随机字符串
+
+traffic.analysis.ffmpeg.path=D:/ffmpeg/bin/ffmpeg.exe
+traffic.analysis.video.upload-dir=./static/video/uploads
+traffic.analysis.video.results-dir=./static/video/results
+traffic.analysis.video.thumbnails-dir=./static/images/thumbnails

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+    <title><%= htmlWebpackPlugin.options.title %></title>
+    <!-- 禁用ResizeObserver错误显示 -->
+    <script>
+      (function() {
+        // 等待webpack-dev-server的overlay模块加载完成
+        const originalCreateOverlay = window.createOverlay;
+        if (originalCreateOverlay) {
+          // 如果函数已经存在，立即修补
+          patchOverlay();
+        } else {
+          // 否则等待函数加载完成
+          Object.defineProperty(window, 'createOverlay', {
+            configurable: true,
+            enumerable: true,
+            get: function() {
+              return originalCreateOverlay;
+            },
+            set: function(newCreateOverlay) {
+              originalCreateOverlay = newCreateOverlay;
+              patchOverlay();
+            }
+          });
+        }
+
+        function patchOverlay() {
+          const originalErrorHandler = window.errorHandler;
+          if (originalErrorHandler) {
+            window.errorHandler = function(type, error) {
+              // 忽略ResizeObserver循环错误
+              if (error && error.message && error.message.includes('ResizeObserver loop')) {
+                return;
+              }
+              // 对于其他错误，调用原始错误处理函数
+              return originalErrorHandler(type, error);
+            };
+          }
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <noscript>
+      <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+    </noscript>
+    <div id="app"></div>
+    <!-- built files will be auto injected -->
+  </body>
+</html>

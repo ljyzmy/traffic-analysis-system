@@ -1,0 +1,40 @@
+# 依赖与构建
+node_modules/
+前端/node_modules/
+后端/target/
+__pycache__/
+*.py[cod]
+.Python
+dist/
+*.log
+logs/
+
+# 本地私密配置（勿提交）
+.env
+.env.*
+application-local.properties
+config_local.py
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# 上传与媒体
+uploads/
+*.mp4
+*.avi
+*.mkv
+
+# 模型权重（体积大，请自行下载后放置）
+*.pt
+*.pth
+*.onnx
+
+# 系统文件
+.DS_Store
+Thumbs.db

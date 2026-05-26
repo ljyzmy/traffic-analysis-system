@@ -1,0 +1,141 @@
+/* 防止导航栏和各种元素文字变色 */
+.el-menu-item,
+.el-submenu__title,
+.el-dropdown-menu__item,
+.el-button--text,
+.el-dropdown {
+  color: #e5e7eb !important;
+}
+
+.el-menu-item.is-active,
+.el-menu-item:hover,
+.el-submenu__title:hover,
+.el-dropdown-menu__item:hover,
+.el-button--text:hover {
+  color: #3b82f6 !important;
+  background-color: rgba(59, 130, 246, 0.1) !important;
+}
+
+/* 防止下拉菜单项变黑 */
+.el-dropdown__popper .el-dropdown-menu__item {
+  color: #e5e7eb !important;
+}
+
+.el-dropdown__popper .el-dropdown-menu__item:hover {
+  color: #3b82f6 !important;
+}
+
+/* 确保导航栏保持一致的颜色 */
+.el-menu.el-menu--horizontal > .el-menu-item.is-active {
+  color: #3b82f6 !important;
+  border-bottom-color: #3b82f6 !important;
+}
+
+/* 确保选择框下拉菜单文字颜色 */
+.el-select-dropdown__item {
+  color: #e5e7eb !important;
+  /* 确保文本垂直居中 */
+  display: flex !important;
+  align-items: center !important;
+  height: 36px !important;
+}
+
+.el-select-dropdown__item span {
+  display: inline-block !important;
+  line-height: normal !important;
+  vertical-align: middle !important;
+}
+
+.el-select-dropdown__item.selected {
+  color: #3b82f6 !important;
+}
+
+/* 确保所有弹出菜单的背景色 */
+.el-dropdown__popper,
+.el-select-dropdown,
+.el-popover {
+  background-color: #1f2937 !important;
+  border-color: #374151 !important;
+}
+
+/* 确保所有下拉菜单项文本垂直居中 */
+.dropdown-item,
+.el-dropdown-menu__item {
+  display: flex !important;
+  align-items: center !important;
+  height: 36px !important;
+}
+
+/* 增强单选按钮全局样式 */
+.el-radio-button__inner {
+  color: #e5e7eb !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  transition: all 0.3s;
+}
+
+.el-radio-button__inner:hover {
+  background-color: rgba(59, 130, 246, 0.1) !important;
+  border-color: #3b82f6 !important;
+}
+
+.el-radio-button__inner:active {
+  transform: scale(0.98);
+}
+
+.el-radio-button__input:checked + .el-radio-button__inner {
+  color: #ffffff !important;
+  background-color: #3b82f6 !important;
+  border-color: #3b82f6 !important;
+  box-shadow: -1px 0 0 0 #3b82f6 !important;
+}
+
+/* 全局美化下拉框 */
+.el-select .el-input__wrapper {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  box-shadow: none !important;
+  transition: all 0.3s;
+}
+
+.el-select .el-input__wrapper:hover {
+  border-color: #3b82f6 !important;
+  background-color: rgba(59, 130, 246, 0.05) !important;
+}
+
+.el-select .el-input__inner {
+  color: #e5e7eb !important;
+}
+
+/* 全局美化按钮 */
+.el-button {
+  transition: all 0.3s;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  font-weight: 500;
+}
+
+.el-button:hover {
+  transform: translateY(-1px);
+}
+
+.el-button:active {
+  transform: translateY(0);
+}
+
+.el-button--primary {
+  background-color: #3b82f6 !important;
+  border-color: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+.el-button--primary:hover {
+  background-color: #2563eb !important;
+  border-color: #2563eb !important;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+}
+
+.el-button--primary:active {
+  background-color: #1d4ed8 !important;
+  border-color: #1d4ed8 !important;
+  box-shadow: none;
+} 

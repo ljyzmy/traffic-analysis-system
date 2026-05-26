@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>交通图片分析系统</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .upload-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="file"] {
+            display: block;
+            margin-bottom: 10px;
+        }
+        select, button {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            min-height: 100px;
+        }
+        .loading {
+            text-align: center;
+            color: #666;
+            display: none;
+        }
+        .result-image {
+            max-width: 100%;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>交通图片分析系统</h1>
+        
+        <!-- 单张图片检测 -->
+        <div class="upload-section">
+            <h2>单张图片检测</h2>
+            <form id="singleForm">
+                <div class="form-group">
+                    <label for="image">选择图片：</label>
+                    <input type="file" id="image" name="image" accept="image/*" required>
+                </div>
+                <div class="form-group">
+                    <label for="direction">方向：</label>
+                    <select id="direction" name="direction">
+                        <option value="horizontal">横向</option>
+                        <option value="vertical">纵向</option>
+                    </select>
+                </div>
+                <button type="button" onclick="detectSingleImage()">检测图片</button>
+            </form>
+            <div class="loading" id="singleLoading">正在分析中，请稍候...</div>
+            <div class="result" id="singleResult"></div>
+        </div>
+        
+        <!-- 批量分析 -->
+        <div class="upload-section">
+            <h2>批量图片分析</h2>
+            <form id="batchForm">
+                <div class="form-group">
+                    <label for="horizontalImages">横向图片 (可多选)：</label>
+                    <input type="file" id="horizontalImages" name="horizontalImages" accept="image/*" multiple>
+                </div>
+                <div class="form-group">
+                    <label for="verticalImages">纵向图片 (可多选)：</label>
+                    <input type="file" id="verticalImages" name="verticalImages" accept="image/*" multiple>
+                </div>
+                <button type="button" onclick="analyzeTrafficBatch()">批量分析</button>
+            </form>
+            <div class="loading" id="batchLoading">正在批量分析中，请稍候...</div>
+            <div class="result" id="batchResult"></div>
+        </div>
+        
+        <!-- 历史记录 -->
+        <div class="upload-section">
+            <h2>分析历史记录</h2>
+            <button type="button" onclick="getHistory()">查看历史记录</button>
+            <div class="loading" id="historyLoading">正在加载历史记录...</div>
+            <div class="result" id="historyResult"></div>
+        </div>
+    </div>
+
+    <script>
+        // 单张图片检测
+        function detectSingleImage() {
+            const formData = new FormData();
+            const imageFile = document.getElementById('image').files[0];
+            const direction = document.getElementById('direction').value;
+            
+            if (!imageFile) {
+                alert('请选择一张图片');
+                return;
+            }
+            
+            formData.append('image', imageFile);
+            formData.append('direction', direction);
+            
+            document.getElementById('singleLoading').style.display = 'block';
+            document.getElementById('singleResult').innerHTML = '';
+            
+            fetch('/api/traffic/detect', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('singleLoading').style.display = 'none';
+                
+                let resultHtml = '<h3>检测结果</h3>';
+                if (data.success) {
+                    resultHtml += `<p>检测结果：${data.car_detected ? '检测到车辆' : '未检测到车辆'}</p>`;
+                    if (data.car_detected) {
+                        resultHtml += `<p>车辆数量：${data.vehicle_count}</p>`;
+                        resultHtml += `<p>拥挤程度：${data.crowd_level}</p>`;
+                    }
+                    
+                    if (data.imagePath) {
+                        resultHtml += `<p>图片路径：${data.imagePath}</p>`;
+                        resultHtml += `<img class="result-image" src="/uploads/${data.imagePath}" alt="检测结果图片">`;
+                    }
+                } else {
+                    resultHtml += `<p>错误：${data.message}</p>`;
+                }
+                
+                document.getElementById('singleResult').innerHTML = resultHtml;
+            })
+            .catch(error => {
+                document.getElementById('singleLoading').style.display = 'none';
+                document.getElementById('singleResult').innerHTML = `<p>请求发生错误：${error.message}</p>`;
+            });
+        }
+        
+        // 批量分析
+        function analyzeTrafficBatch() {
+            const formData = new FormData();
+            const horizontalFiles = document.getElementById('horizontalImages').files;
+            const verticalFiles = document.getElementById('verticalImages').files;
+            
+            if (horizontalFiles.length === 0 && verticalFiles.length === 0) {
+                alert('请至少选择一张图片');
+                return;
+            }
+            
+            for (let i = 0; i < horizontalFiles.length; i++) {
+                formData.append('horizontalImages', horizontalFiles[i]);
+            }
+            
+            for (let i = 0; i < verticalFiles.length; i++) {
+                formData.append('verticalImages', verticalFiles[i]);
+            }
+            
+            document.getElementById('batchLoading').style.display = 'block';
+            document.getElementById('batchResult').innerHTML = '';
+            
+            fetch('/api/traffic/analysis/batch', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('batchLoading').style.display = 'none';
+                
+                let resultHtml = '<h3>批量分析结果</h3>';
+                if (data.success) {
+                    resultHtml += `<p>分析时间：${data.timestamp}</p>`;
+                    resultHtml += `<p>横向处理：${data.horizontalProcessed}张，车辆总数：${data.horizontalTotal}，拥挤程度：${data.horizontalCrowd}</p>`;
+                    resultHtml += `<p>纵向处理：${data.verticalProcessed}张，车辆总数：${data.verticalTotal}，拥挤程度：${data.verticalCrowd}</p>`;
+                    resultHtml += `<p>建议方案：${data.solution}</p>`;
+                } else {
+                    resultHtml += `<p>错误：${data.message}</p>`;
+                }
+                
+                document.getElementById('batchResult').innerHTML = resultHtml;
+            })
+            .catch(error => {
+                document.getElementById('batchLoading').style.display = 'none';
+                document.getElementById('batchResult').innerHTML = `<p>请求发生错误：${error.message}</p>`;
+            });
+        }
+        
+        // 获取历史记录
+        function getHistory() {
+            document.getElementById('historyLoading').style.display = 'block';
+            document.getElementById('historyResult').innerHTML = '';
+            
+            fetch('/api/traffic/history')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('historyLoading').style.display = 'none';
+                
+                let resultHtml = '<h3>历史记录</h3>';
+                
+                if (data.length > 0) {
+                    resultHtml += '<table border="1" style="width:100%; border-collapse: collapse;">';
+                    resultHtml += '<tr><th>时间</th><th>横向车辆</th><th>纵向车辆</th><th>方案</th></tr>';
+                    
+                    data.forEach(item => {
+                        resultHtml += `<tr>
+                            <td>${item.timestamp}</td>
+                            <td>${item.horizontalTotal} (${item.horizontalCrowd})</td>
+                            <td>${item.verticalTotal} (${item.verticalCrowd})</td>
+                            <td>${item.solution}</td>
+                        </tr>`;
+                    });
+                    
+                    resultHtml += '</table>';
+                } else {
+                    resultHtml += '<p>暂无历史记录</p>';
+                }
+                
+                document.getElementById('historyResult').innerHTML = resultHtml;
+            })
+            .catch(error => {
+                document.getElementById('historyLoading').style.display = 'none';
+                document.getElementById('historyResult').innerHTML = `<p>请求发生错误：${error.message}</p>`;
+            });
+        }
+    </script>
+</body>
+</html>
